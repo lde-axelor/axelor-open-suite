@@ -1,0 +1,34 @@
+pr:
+  number: 5
+  title: "ci(doc-workflow): auto-accept Claude writes in headless (acceptEdits)"
+  target_branch: "master"
+  author: "lde-axelor"
+  analyzed_range: "b8232a4ca008..85310197f6a938fd7f6903921f886551df831446"
+change:
+  type: "config"
+  summary: "Fix the automated documentation CI workflow so Claude can actually write output files in headless mode by switching to --permission-mode acceptEdits."
+  breaking_change: false
+functional:
+  description: >-
+    The automated documentation pipeline was silently broken: Claude executed
+    successfully in headless (-p) mode but could not write any output file,
+    so no documentation was ever generated or committed. The root cause is
+    that a path-scoped Write allow-list rule alone is insufficient to
+    auto-approve writes in headless mode — the write remains "awaiting
+    approval" and is never executed. Adding --permission-mode acceptEdits
+    instructs the Claude Code runtime to auto-approve file writes, restoring
+    end-to-end documentation generation. The containment model is updated
+    accordingly: security now relies on the clean-room execution environment
+    (no repository content on disk) and on the collect/commit step being
+    scoped to docs/generated/, rather than on a path-restricted Write rule.
+  affected_features:
+    - "Automated PR documentation generation (claude-doc-on-merge CI workflow)"
+technical:
+  modules: []
+  entities: []
+  services: []
+  views:
+    []
+notes:
+  - "The Write tool is now unrestricted in the allow-list (Write instead of Write(DOC_DIR/**)); containment relies entirely on the clean-room environment and the downstream collect step — any future change that places sensitive repo content in the runner environment would weaken this model."
+  - "No Axelor application code, domain model, or views were modified; this change is confined to CI/CD infrastructure."
