@@ -246,18 +246,23 @@ jobs:
             echo '--- END NOTICE ---'
           } > /tmp/full-prompt.txt
 
-          # -p (headless) mode. Explicit allow-list => default-deny on everything
-          # else. Reads are confined to the prepared input dir (+ its own output
-          # dir); NO repository-wide Read/Glob/Grep, so prompt-injected content
-          # cannot exfiltrate sensitive tracked files into the committed docs.
-          # No Bash (git is pre-computed). No Edit (doc generated fresh). Write
-          # is confined to the documentation directory.
+          # -p (headless) mode. `--permission-mode acceptEdits` auto-approves the
+          # file write (a path-scoped Write allow-list rule alone leaves the write
+          # "awaiting approval" in headless mode, so nothing gets written). Bash,
+          # WebFetch, etc. are NOT in the allow-list and stay denied.
+          #
+          # Containment no longer relies on a path-scoped Write rule but on:
+          #  - the clean room (no repo content on disk, so nothing sensitive to
+          #    read or overwrite),
+          #  - reads scoped to the prepared input dir,
+          #  - the collect/commit steps, which only ever pick up docs/generated/.
           claude -p "$(cat /tmp/full-prompt.txt)" \
             --output-format text \
+            --permission-mode acceptEdits \
             --allowedTools \
               "Read(.claude-input/**)" \
               "Read(${DOC_DIR}/**)" \
-              "Write(${DOC_DIR}/**)"
+              "Write"
 
       - name: Collect generated documentation files
         id: collect
