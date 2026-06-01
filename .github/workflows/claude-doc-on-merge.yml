@@ -246,23 +246,23 @@ jobs:
             echo '--- END NOTICE ---'
           } > /tmp/full-prompt.txt
 
-          # -p (headless) mode. `--permission-mode acceptEdits` auto-approves the
-          # file write (a path-scoped Write allow-list rule alone leaves the write
-          # "awaiting approval" in headless mode, so nothing gets written). Bash,
-          # WebFetch, etc. are NOT in the allow-list and stay denied.
+          # -p (headless) mode. `--permission-mode acceptEdits` auto-approves
+          # file writes WITHOUT widening the allow-list: the path-scoped
+          # Write(${DOC_DIR}/**) rule stays default-deny for every other path
+          # (e.g. $GITHUB_ENV, $GITHUB_PATH, $RUNNER_TEMP), so a prompt injection
+          # cannot escalate by writing runner-sensitive files. Bash, WebFetch,
+          # etc. are not in the allow-list and stay denied.
           #
-          # Containment no longer relies on a path-scoped Write rule but on:
-          #  - the clean room (no repo content on disk, so nothing sensitive to
-          #    read or overwrite),
-          #  - reads scoped to the prepared input dir,
-          #  - the collect/commit steps, which only ever pick up docs/generated/.
+          # Defense in depth on top of this scope: the clean room (no repo
+          # content on disk) and the collect/commit steps that only ever pick up
+          # docs/generated/.
           claude -p "$(cat /tmp/full-prompt.txt)" \
             --output-format text \
             --permission-mode acceptEdits \
             --allowedTools \
               "Read(.claude-input/**)" \
               "Read(${DOC_DIR}/**)" \
-              "Write"
+              "Write(${DOC_DIR}/**)"
 
       - name: Collect generated documentation files
         id: collect
