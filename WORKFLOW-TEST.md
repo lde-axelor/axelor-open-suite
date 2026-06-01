@@ -6,3 +6,5 @@ Fichier temporaire pour déclencher le workflow `claude-doc-on-merge` et vérifi
 - À supprimer après le test.
 
 - Run 3 : validation du fix acceptEdits (écriture auto du YAML en mode -p).
+
+- Run 4 : validation du Write scopé (docs/generated) + acceptEdits.
