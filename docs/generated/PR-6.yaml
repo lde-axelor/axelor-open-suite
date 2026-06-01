@@ -1,0 +1,31 @@
+pr:
+  number: 6
+  title: "test: doc workflow run 3"
+  target_branch: "master"
+  author: "lde-axelor"
+  analyzed_range: "e8ead9e57bb6..e52f26787853c6e9f3ac3eb12343cac846debcc4"
+
+change:
+  type: "other"
+  summary: "Appends a test annotation to WORKFLOW-TEST.md to validate the acceptEdits auto-write fix in the claude-doc-on-merge CI workflow."
+  breaking_change: false
+
+functional:
+  description: >
+    This change has no functional impact on the Axelor ERP application.
+    It modifies a temporary test file (WORKFLOW-TEST.md) that exists solely
+    to trigger and validate the documentation-generation CI workflow.
+    The added line records that run 3 was used to verify the acceptEdits fix
+    enabling automatic YAML file writing in pipeline mode (-p).
+  affected_features: []
+
+technical:
+  modules: []
+  entities: []
+  services: []
+  views: []
+
+notes:
+  - "WORKFLOW-TEST.md is a temporary file created on 2026-06-01 and is marked for deletion after testing."
+  - "No Axelor business logic, data model, or configuration was modified."
+  - "The sole purpose of this PR is CI/workflow infrastructure validation (acceptEdits fix in claude-doc-on-merge)."
